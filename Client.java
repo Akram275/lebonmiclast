@@ -189,25 +189,25 @@ public class Client{
 						break;
 
 					case "ADDARTICLE" :
-						pw.println(cmd);
-						pw.flush();
 						System.out.print("domain : ");
 						domaine = sc.nextLine();
-						pw.println(domaine);
-						pw.flush();
 						System.out.print("name : ");
 						name = sc.nextLine();
-						pw.println(name);
-						pw.flush();
 						System.out.print("price : ");
 						prix = 0;
 						try{
 						  prix = Integer.parseInt(sc.nextLine());
-						}catch(Exception e){System.out.println("Le prix est une valeur numérique");}
-						pw.println(prix);
-						pw.flush();
+						}catch(Exception e){System.out.println("Le prix est une valeur numérique");break;}
 						System.out.print("desc : ");
 						desc = sc.nextLine();
+						pw.println(cmd);
+						pw.flush();
+						pw.println(domaine);
+						pw.flush();
+						pw.println(name);
+						pw.flush();
+						pw.println(prix);
+						pw.flush();
 						pw.println(desc);
 						pw.flush();
 						pw.println("***");
@@ -288,10 +288,13 @@ public class Client{
 						break;
 
 					case "DELARTICLE":
+						id = 0;
+						System.out.print("product id : ");
+						try{
+						  id = Integer.parseInt(sc.nextLine());
+						}catch(Exception e){System.out.println("Ce champs doit étre un int");break;}
 						pw.println(cmd);
 						pw.flush();
-						System.out.print("product id : ");
-						id = Integer.parseInt(sc.nextLine());
 						pw.println(id);
 						pw.flush();
 						pw.println("***");
@@ -320,10 +323,13 @@ public class Client{
 						return;
 
 					case "SPEAK":
+						id = 0;
+						System.out.print("product id : ");
+						try{
+						  id = Integer.parseInt(sc.nextLine());
+						}catch(Exception e){System.out.println("ce champ doit étre un int");break;}
 						pw.println(cmd);
 						pw.flush();
-						System.out.print("product id : ");
-						id = Integer.parseInt(sc.nextLine());
 						pw.println(id);
 						pw.flush();
 						pw.println("***");
