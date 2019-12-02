@@ -25,18 +25,18 @@ public class UDPListenThread implements Runnable{
 		 return Base64.getEncoder().encodeToString(cipherText);
  }
 
- public static String decryptRSA(String cipherText, PrivateKey privateKey) throws Exception {
+ public static byte[] decryptRSA(String cipherText, PrivateKey privateKey) throws Exception {
 			 byte[] bytes = Base64.getDecoder().decode(cipherText);
 
-			 Cipher decriptCipher = Cipher.getInstance("RSA/ECB/NOPADDING");
+			 Cipher decriptCipher = Cipher.getInstance("RSA/ECB/NoPadding");
 			 decriptCipher.init(Cipher.DECRYPT_MODE, privateKey);
 
-			 return new String(decriptCipher.doFinal(bytes));
+			 return decriptCipher.doFinal(bytes);
 	 }
 
-	 public static String encryptAES(String strToEncrypt, SecretKeySpec secret){
+	 public static String encryptAES(String strToEncrypt, SecretKey secreta){
 		try{
-
+				SecretKeySpec secret = new SecretKeySpec(secreta.getEncoded(), "AES");
 				Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
 				cipher.init(Cipher.ENCRYPT_MODE, secret);
 				return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes()));
@@ -44,9 +44,9 @@ public class UDPListenThread implements Runnable{
 		return null;
 }
 
-public static String decryptAES(String strToDecrypt, SecretKeySpec secret){
+public static String decryptAES(String strToDecrypt, SecretKey secreta){
 		try{
-
+				SecretKeySpec secret = new SecretKeySpec(secreta.getEncoded(), "AES");
 				Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
 				cipher.init(Cipher.DECRYPT_MODE, secret);
 				return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
@@ -137,12 +137,13 @@ public static String decryptAES(String strToDecrypt, SecretKeySpec secret){
 						KeyGenerator keyGen = KeyGenerator.getInstance("AES");
             keyGen.init(128);
             SecretKey secretKey = keyGen.generateKey();
-						u.setAES(secretKey);
+
+						u.AES = secretKey;
 						/*************************Envoie de la clé*********************/
 						byte[] encodedKey = secretKey.getEncoded();
 						//String key_sent = Base64.getEncoder().encode(encodedKey);
-						//System.out.println("clé envoyé est = "+new String(Base64.getEncoder().encode(encodedKey)));
-						cle_chiffree = encryptRSA(Base64.getEncoder().encode(encodedKey), k);
+						System.out.println("clé envoyé est = "+new String(encodedKey)+ encodedKey.length);
+						cle_chiffree = encryptRSA(encodedKey, k);
 						//System.out.println("clé aes chiffré = "+cle_chiffree);
 						String mess = cle_chiffree+"***"+username+"***"+this.c.username;
 						data1 = mess.getBytes();
@@ -162,21 +163,28 @@ public static String decryptAES(String strToDecrypt, SecretKeySpec secret){
 					port_ = paquet.getPort();
 					System.out.println(port_);
 					//System.out.println("decoded key received = "+cnx2[0]);
-					String AES_DECHIFFREE = decryptRSA(cnx2[0], privRSA);
-					//System.out.println("aes key decrypted = "+AES_DECHIFFREE);
+					byte[] fullkey = decryptRSA(cnx2[0], privRSA);
+					byte[] AES_DECHIFFREE = new byte[16];
+					System.arraycopy(fullkey, fullkey.length - 16, AES_DECHIFFREE, 0, AES_DECHIFFREE.length);
+
+					System.out.println("aes key decrypted = "+new String(AES_DECHIFFREE)+ AES_DECHIFFREE.length);
 					//byte[] decodedKey = Base64.getDecoder().decode(AES_DECHIFFREE.substring(0));
-					SecretKeySpec aes_key = new SecretKeySpec(AES_DECHIFFREE.getBytes(), 0, AES_DECHIFFREE.getBytes().length, "AES");
+					SecretKeySpec aes_key = new SecretKeySpec(AES_DECHIFFREE, "AES");
 					//SecretKey aes_key = KeyFactory.getInstance("AES").generatePrivate(new X509EncodedKeySpec(Base64.getDecoder().decode(AES_DECHIFFREE)))
+
 					System.out.println("AES KEY-EXCHANGE SUCCESS");
 					u = FindUser(username, port_, ip, null);
-					u.setAES(aes_key);
+					//u.setAES(aes_key);
+					u.AES = aes_key;
+					System.out.println(u.AES.getEncoded());
 					/**************************************************************************************/
 					continue;
 				}else if (cnx2.length == 2){ // Cas Client connu (a priori) et message chiffre
 					username = cnx2[0];
 					u = FindUser(username, 0, null, null); //seuls des contacts avec cle peuvent nous parler
 					if(u != null){
-						SecretKeySpec k_aes = u.getAES();
+						SecretKey k_aes = u.AES;
+						System.out.println("aes key decrypted = "+k_aes.getEncoded());
 						System.out.println(username + ">"+decryptAES(cnx2[1], k_aes));
 						continue;
 					}

@@ -42,19 +42,20 @@ public class Test{
       pvt = kp.getPrivate();
       String str = "[B@27ada7f2";
       String cipher = encryptRSA(str.getBytes(), pub);
-      System.out.println(cipher);
+      //System.out.println(cipher);
       String plain = decryptRSA(cipher, pvt);
-      System.out.println(plain);
-      plain = "C4F0kVdr9Im1237V+wcUyw==";
-      SecretKey secretKey = KeyGenerator.getInstance("AES").generateKey();
-      // get base64 encoded version of the key
-      String encodedKey = Base64.getEncoder().encodeToString(secretKey.getEncoded());
-      System.out.println("new key = "+encodedKey);
-
-      byte[] decodedKey = Base64.getDecoder().decode(encodedKey);
-      // rebuild key using SecretKeySpec
-      SecretKey originalKey = new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES");
-      //PrivateKey aes_key = KeyFactory.getInstance("AES").generatePrivate(new X509EncodedKeySpec(plain.getBytes()));
+      //System.out.println(plain);
+      //plain = "C4F0kVdr9Im1237V+wcUyw==";
+      SecretKeySpec secretKey = new SecretKeySpec(KeyGenerator.getInstance("AES").generateKey().getEncoded(), "AES");
+      byte[] encoded = secretKey.getEncoded();
+      System.out.println(secretKey.hashCode());
+      String chiffre = encryptRSA(Base64.getEncoder().encode(encoded), pub);
+      String AES_DECHIFFREE = decryptRSA(chiffre, pvt);
+      SecretKeySpec originalKey = new SecretKeySpec(AES_DECHIFFREE.getBytes(), 0, AES_DECHIFFREE.getBytes().length, "AES");
+      if(originalKey == null){
+        System.out.println("elle est ntlle");
+      }
+      System.out.println(originalKey.equals(secretKey));
       //key_pub = encoder.encodeToString(pub.getEncoded());
       //key_priv = encoder.encodeToString(pvt.getEncoded());
     }catch(Exception e){e.printStackTrace();}

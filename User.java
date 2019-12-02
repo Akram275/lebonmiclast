@@ -17,7 +17,7 @@ public class User{
   private ArrayList<Article> products;
   private String IP;
   private Key RSA; //La clé public RSA
-  private SecretKeySpec AES; //La clé AES
+  public SecretKey AES; //La clé AES
 
   public User(String username, int port, String ip, Key k){
     this.username = username;
@@ -63,10 +63,10 @@ public class User{
   public void setRSA(PublicKey k){
     this.RSA = k;
   }
-  public void setAES(Key k){
+  public void setAES(SecretKey k){
     this.AES = AES;
   }
-  public SecretKeySpec getAES(){
+  public SecretKey getAES(){
     return this.AES;
   }
   public boolean is_superuser(){

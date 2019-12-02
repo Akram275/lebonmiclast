@@ -22,9 +22,9 @@ public class ClientUDP{
 	}
 
 
-	public static String encryptAES(String strToEncrypt, SecretKeySpec secret){
+	public static String encryptAES(String strToEncrypt, SecretKey secreta){
 	 try{
-
+		 SecretKeySpec secret = new SecretKeySpec(secreta.getEncoded(), "AES");
 			 Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
 			 cipher.init(Cipher.ENCRYPT_MODE, secret);
 			 return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes()));
@@ -79,8 +79,9 @@ public class ClientUDP{
 				//Envoi
 				System.out.print("message : ");
 				s = sc.nextLine();
-				s = encryptAES(s, u.getAES());
-				System.out.println("message ciphered = "+s);
+				System.out.println(u.AES.getEncoded());
+				s = cl_udp.username+"***"+encryptAES(s, u.AES);
+				System.out.println("message ciphered = "+cl_udp.username+"***"+s);
 				data = s.getBytes();
 				InetSocketAddress	ia = new InetSocketAddress(u.get_ip().substring(1),u.get_port());
 				DatagramPacket		paquet = new DatagramPacket(data,data.length,ia);

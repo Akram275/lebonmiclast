@@ -48,12 +48,12 @@ public class Client{
 			LauncherThread launch = null;
 			int udp_listen = 0;
 			String cmd;
-			Socket so = new Socket("localhost", 4450); //172.28.173.21
+			Socket so = new Socket("172.28.174.152", 4450); //172.28.173.21
 			BufferedReader br = new BufferedReader(new InputStreamReader(so.getInputStream()));
 			PrintWriter pw = new PrintWriter(new OutputStreamWriter(so.getOutputStream()));
 			so.setTcpNoDelay(true);
 			//String fst = br.readLine();
-			System.out.print("*****************Bienvenu sur le bon mic*******************\n");
+			System.out.print("*****************Bienvenue sur le bon mic*******************\n");
 			System.out.println(">  : ligne de commande ");
 			System.out.println("-> : réponses serveur ");
 			while(true){
