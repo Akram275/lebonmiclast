@@ -62,18 +62,19 @@ public class Client{
 				//System.out.println(cmd);
 				switch(cmd){
 					case "SIGNUP" :
-						pw.println(cmd);
-						pw.flush();
 						System.out.print("username : ");
 						username = sc.nextLine();
 						//System.out.println ("username = {" + username + "} + len = " + username.length());
-						pw.println(username);
-						pw.flush();
-						System.out.print("udp port n° : ");
+
+						System.out.print("udp port n° generated : ");
 						port = 0;
 						try{
-						  port = Integer.parseInt(sc.nextLine());
-						}catch(Exception e){System.out.println("Le numéro de port doit étre un numéro ..");}
+							DatagramSocket portsocket = new DatagramSocket();
+						  //port = Integer.parseInt(sc.nextLine());
+							port = portsocket.getLocalPort();
+							portsocket.close();
+							System.out.println(port);
+						}catch(Exception e){System.out.println("Error while generating port");break;}
 						udp_listen = port;
 						/****Key generation *********************/
 						kpg.initialize(1024);
@@ -85,6 +86,10 @@ public class Client{
 						key_priv = encoder.encodeToString(pvt.getEncoded());
 						/****************************************/
 						System.out.println("clé RSA bien génrée");
+						pw.println(cmd);
+						pw.flush();
+						pw.println(username);
+						pw.flush();
 						pw.println(port);
 						pw.flush();
 						pw.println(key_pub);
@@ -123,20 +128,19 @@ public class Client{
 						break;
 
 					case "LOGIN" :
-						pw.println(cmd);
-						pw.flush();
 						System.out.print("username : ");
 						username = sc.nextLine();
 						//System.out.println ("username = {" + username + "} + len = " + username.length());
-						pw.println(username);
-						pw.flush();
-						System.out.print("udp port n° : ");
+						System.out.print("udp port n° generated: ");
 						try{
-						  port = Integer.parseInt(sc.nextLine());
+							DatagramSocket portsoket = new DatagramSocket();
+							port = portsoket.getLocalPort();
+						  //port = Integer.parseInt(sc.nextLine());
+							portsoket.close();
+							System.out.println(port);
 						}catch(Exception e){System.out.println("Le numéro de port doit étre un numéro ...");break;}
 						udp_listen = port;
-						pw.println(port);
-						pw.flush();
+
 						/***********************generation de clé **************************/
 						kpg.initialize(1024);
 						kp = kpg.generateKeyPair();
@@ -146,7 +150,13 @@ public class Client{
 						key_priv = encoder.encodeToString(pvt.getEncoded());
 						/*******************************************************************/
 						System.out.println("clé RSA bien génrée");
-						//pw.println(key_pub);
+						pw.println(cmd);
+						pw.flush();
+						pw.println(username);
+						pw.flush();
+						pw.println(port);
+						pw.flush();
+						pw.println(key_pub);
 						pw.flush();
 						pw.print("***\n");
 						pw.flush();
